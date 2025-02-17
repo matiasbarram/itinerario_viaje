@@ -4,6 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["mbarram <matias.barra@itrend.cl>"]
 readme = "README.md"
+packages = [{include = "viaje"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
