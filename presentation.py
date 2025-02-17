@@ -103,8 +103,7 @@ def crear_presentacion():
 
     # Introducción
     st.write("""
-    Exploraremos 4 diferentes planes para nuestro viaje de 18 días. 
-    Cada plan tiene sus propias ventajas y enfoque único.
+    4 diferentes planes para nuestro viaje de 18 días. 
     """)
 
     # Selector de planes
