@@ -112,7 +112,10 @@ def crear_presentacion():
         ["Plan A: Italia + Croacia Completo", 
          "Plan B: Solo Italia", 
          "Plan C: Norte de Italia + Toscana",
-         "Plan D: Norte de Italia + Croacia con regreso por Zagreb"]
+         "Plan D: Norte de Italia + Croacia con regreso por Zagreb",
+         "Plan E: Norte de Italia + Lagos + Roma",
+
+         ]
     )
 
     def mostrar_tabla_alojamiento(itinerario: List[Dict]):
@@ -299,8 +302,45 @@ def crear_presentacion():
         - En Bellagio, busca hoteles con vista al lago
         """)
 
-    else:  # Plan D
+    elif plan == "Plan E: Norte de Italia + Lagos + Roma":
+        st.markdown("""
+        ### 🎯 Plan E: Norte de Italia + Lagos + Roma
+        **Características principales:**
+        - Norte de Italia (7 días)
+        - Región de Lagos (3 días)
+        - Roma y alrededores (8 días)
+        
+        **Ventajas:**
+        - ✅ Ritmo balanceado
+        - ✅ Combina naturaleza y cultura
+        - ✅ Más tiempo en Roma
+        - ✅ Menor costo en transportes
+        
+        **Desventajas:**
+        - ⚠️ No conocer Croacia
+        - ⚠️ No ver la Toscana
+        """)
+        
+        # Crear y mostrar mapa del Plan E
+        itinerario = crear_itinerario_plan_e()
+        colores = get_colores_plan_e()
+        conexiones = get_conexiones_plan_e()
+        mapa = crear_mapa(itinerario, colores, conexiones)
+        folium_static(mapa)
 
+        # Sección de alojamiento recomendado
+        st.subheader("🏨 Alojamiento Recomendado")
+        mostrar_tabla_alojamiento(itinerario)
+        
+        st.info("""
+        💡 **Tips de alojamiento Plan E:**
+        - En Como, busca alojamiento cerca del lago para mejores vistas
+        - En Bellagio, los hoteles con terraza ofrecen vistas espectaculares
+        - En Roma, el Centro Storico permite caminar a todas las atracciones
+        - Para excursiones desde Roma, el área de Termini ofrece buena conexión
+        """)
+
+    elif plan == "Plan D: Norte de Italia + Croacia con regreso por Zagreb":
         st.markdown("""
         ### 🎯 Plan D: Norte de Italia + Croacia con regreso gradual
         **Características principales:**
@@ -342,7 +382,7 @@ def crear_presentacion():
     # Recomendación final
     st.subheader("🌟 Recomendación Personal")
     st.write("""
-    Basado en nuestras conversaciones, el Plan C o D serían los más recomendados porque:
+    Basado en nuestras conversaciones, el Plan C o D o E serían los más recomendados porque:
     - Permiten un ritmo más relajado
     - Se ajustan mejor al presupuesto
     - Ofrecen una experiencia más auténtica
@@ -354,7 +394,9 @@ from planes import (
     crear_itinerario_plan_a, get_colores_plan_a, get_conexiones_plan_a,
     crear_itinerario_plan_b, get_colores_plan_b, get_conexiones_plan_b,
     crear_itinerario_plan_c, get_colores_plan_c, get_conexiones_plan_c,
-    crear_itinerario_plan_d, get_colores_plan_d, get_conexiones_plan_d
+    crear_itinerario_plan_d, get_colores_plan_d, get_conexiones_plan_d,
+    crear_itinerario_plan_e, get_colores_plan_e, get_conexiones_plan_e,
+
 )
 
 if __name__ == "__main__":

@@ -38,6 +38,7 @@ def crear_itinerario_plan_b():
         {"lugar": "Trento", "lat": 46.0748, "lon": 11.1217, "fecha": "1 Mayo", "dia": "1", "categoria": "Regreso"},
         {"lugar": "Milán (Aeropuerto)", "lat": 45.6301, "lon": 8.7255, "fecha": "2 Mayo", "dia": "2", "categoria": "Regreso"}
     ]
+    
 
 def get_conexiones_plan_a():
     """Obtiene las conexiones entre regiones para el Plan A"""
@@ -270,8 +271,52 @@ def crear_plan_d():
     conexiones = get_conexiones_plan_d()
     crear_mapa(itinerario, colores, conexiones, "itinerario_plan_d.html")
 
+
+def crear_itinerario_plan_e():
+    """Genera el itinerario del Plan E: Norte de Italia + Lagos + Roma"""
+    return [
+        {"lugar": "Milán", "lat": 45.6301, "lon": 8.7255, "fecha": "13 Abril", "dia": "13", "categoria": "Norte de Italia"},
+        {"lugar": "Trento", "lat": 46.0748, "lon": 11.1217, "fecha": "14-15 Abril", "dia": "14-15", "categoria": "Norte de Italia"},
+        {"lugar": "Sirmione", "lat": 45.5000, "lon": 10.6056, "fecha": "16 Abril", "dia": "16", "categoria": "Norte de Italia"},
+        {"lugar": "Verona", "lat": 45.4384, "lon": 10.9916, "fecha": "17 Abril", "dia": "17", "categoria": "Norte de Italia"},
+        {"lugar": "Venecia", "lat": 45.4408, "lon": 12.3155, "fecha": "18-19 Abril", "dia": "18-19", "categoria": "Norte de Italia"},
+        {"lugar": "Provesano", "lat": 46.1947, "lon": 12.8801, "fecha": "20 Abril", "dia": "20", "categoria": "Norte de Italia"},
+        {"lugar": "Como", "lat": 45.8081, "lon": 9.0852, "fecha": "21-22 Abril", "dia": "21-22", "categoria": "Lagos"},
+        {"lugar": "Bellagio", "lat": 45.9864, "lon": 9.2618, "fecha": "23 Abril", "dia": "23", "categoria": "Lagos"},
+        {"lugar": "Roma", "lat": 41.9028, "lon": 12.4964, "fecha": "24-28 Abril", "dia": "24-28", "categoria": "Roma"},
+        {"lugar": "Orvieto", "lat": 42.7185, "lon": 12.1111, "fecha": "29 Abril", "dia": "29", "categoria": "Roma"},
+        {"lugar": "Ostia Antica", "lat": 41.7556, "lon": 12.2883, "fecha": "30 Abril", "dia": "30", "categoria": "Roma"},
+        {"lugar": "Trento", "lat": 46.0748, "lon": 11.1217, "fecha": "1 Mayo", "dia": "1", "categoria": "Regreso"},
+        {"lugar": "Milán (Aeropuerto)", "lat": 45.6301, "lon": 8.7255, "fecha": "2 Mayo", "dia": "2", "categoria": "Regreso"}
+    ]
+
+def get_colores_plan_e():
+    """Obtiene los colores para las categorías del Plan E"""
+    return {
+        "Norte de Italia": "blue",
+        "Lagos": "purple",
+        "Roma": "red",
+        "Regreso": "black"
+    }
+
+def get_conexiones_plan_e():
+    """Obtiene las conexiones entre regiones para el Plan E"""
+    return [
+        {"inicio": "Provesano", "fin": "Como", "tipo": "Tren", "color": "brown"},
+        {"inicio": "Bellagio", "fin": "Roma", "tipo": "Tren", "color": "brown"},
+        {"inicio": "Ostia Antica", "fin": "Trento", "tipo": "Tren", "color": "brown"}
+    ]
+
+def crear_plan_e():
+    """Crea el mapa para el Plan E"""
+    itinerario = crear_itinerario_plan_e()
+    colores = get_colores_plan_e()
+    conexiones = get_conexiones_plan_e()
+    crear_mapa(itinerario, colores, conexiones, "itinerario_plan_e.html")
+
 # Para crear los mapas:
 crear_plan_a()
 crear_plan_b()
 crear_plan_c()
 crear_plan_d()
+crear_plan_e()
