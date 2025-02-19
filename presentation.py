@@ -5,6 +5,55 @@ import folium
 from folium import plugins
 from typing import List, Dict
 
+def crear_itinerario():
+    """Genera el itinerario final"""
+    return [
+        # Base en Trento
+        {"lugar": "Milán", "lat": 45.6301, "lon": 8.7255, "fecha": "13 Abril", "dia": "13", "categoria": "Llegada"},
+        {"lugar": "Trento", "lat": 46.0748, "lon": 11.1217, "fecha": "13-18 Abril", "dia": "13-18", "categoria": "Base Trento", "nota": "Alojamiento con amiga"},
+        
+        # Provesano y Venecia
+        {"lugar": "Provesano", "lat": 46.1947, "lon": 12.8801, "fecha": "19-20 Abril", "dia": "19-20", "categoria": "Provesano"},
+        {"lugar": "Venecia", "lat": 45.4408, "lon": 12.3155, "fecha": "19 Abril", "dia": "19", "categoria": "Excursión"},
+        
+        # Vuelta a Trento
+        {"lugar": "Trento", "lat": 46.0748, "lon": 11.1217, "fecha": "21 Abril", "dia": "21", "categoria": "Base Trento"},
+        
+        # Roma
+        {"lugar": "Roma", "lat": 41.9028, "lon": 12.4964, "fecha": "22-25 Abril", "dia": "22-25", "categoria": "Roma"},
+        
+        # Ruta Roma-Trento (opciones a definir)
+        {"lugar": "Orvieto", "lat": 42.7185, "lon": 12.1111, "fecha": "26 Abril", "dia": "26", "categoria": "Por definir", "nota": "Opción sugerida"},
+        {"lugar": "Siena", "lat": 43.3188, "lon": 11.3305, "fecha": "27 Abril", "dia": "27", "categoria": "Por definir", "nota": "Opción sugerida"},
+        {"lugar": "Florencia", "lat": 43.7696, "lon": 11.2558, "fecha": "28 Abril", "dia": "28", "categoria": "Por definir", "nota": "Opción sugerida"},
+        {"lugar": "Bologna", "lat": 44.4949, "lon": 11.3426, "fecha": "29 Abril", "dia": "29", "categoria": "Por definir", "nota": "Opción sugerida"},
+        {"lugar": "Trento", "lat": 46.0748, "lon": 11.1217, "fecha": "30 Abril", "dia": "30", "categoria": "Base Trento", "nota": "Alojamiento con amiga"},
+        
+        # Final en Milán
+        {"lugar": "Milán", "lat": 45.6301, "lon": 8.7255, "fecha": "1-2 Mayo", "dia": "1-2", "categoria": "Final"}
+    ]
+
+def get_colores():
+    """Obtiene los colores para las categorías"""
+    return {
+        "Llegada": "#1e40af",      # azul oscuro
+        "Base Trento": "#2563eb",  # azul
+        "Provesano": "#7c3aed",    # violeta
+        "Excursión": "#059669",    # verde esmeralda
+        "Roma": "#dc2626",         # rojo
+        "Por definir": "#9ca3af",  # gris claro (para rutas tentativas)
+        "Final": "#475569"         # gris
+    }
+
+def get_conexiones():
+    """Obtiene las conexiones entre regiones"""
+    return [
+        {"inicio": "Milán", "fin": "Trento", "tipo": "Tren", "color": "#94a3b8"},
+        {"inicio": "Trento", "fin": "Provesano", "tipo": "Auto", "color": "#94a3b8"},
+        {"inicio": "Provesano", "fin": "Venecia", "tipo": "Tren", "color": "#94a3b8"},
+        {"inicio": "Trento", "fin": "Roma", "tipo": "Tren", "color": "#94a3b8"},
+        {"inicio": "Roma", "fin": "Orvieto", "tipo": "Auto", "color": "#94a3b8"}
+    ]
 
 def crear_leyenda(colores: Dict[str, str], conexiones: List[Dict]) -> str:
     """Crea el HTML para la leyenda del mapa"""
@@ -19,7 +68,7 @@ def crear_leyenda(colores: Dict[str, str], conexiones: List[Dict]) -> str:
                 border: 2px solid grey;
                 border-radius: 5px;
                 font-size: 14px;">
-        <p style="margin-bottom: 10px;"><strong>Regiones:</strong></p>
+        <p style="margin-bottom: 10px;"><strong>Etapas:</strong></p>
     '''
     
     # Agregar regiones
@@ -36,9 +85,7 @@ def crear_leyenda(colores: Dict[str, str], conexiones: List[Dict]) -> str:
     return leyenda_html
 
 def crear_mapa(itinerario: List[Dict], colores: Dict[str, str], conexiones: List[Dict]):
-    """
-    Crea un mapa con el itinerario especificado y lo retorna
-    """
+    """Crea un mapa con el itinerario especificado y lo retorna"""
     # Crear el mapa centrado en Italia
     mapa = folium.Map(location=[44.4968, 12.5568], zoom_start=6)
     
@@ -98,40 +145,29 @@ def crear_mapa(itinerario: List[Dict], colores: Dict[str, str], conexiones: List
     return mapa
 
 def crear_presentacion():
-    st.title("🌍 Planes de Viaje: Italia y Croacia")
-    st.subheader("Abril-Mayo 2025")
+    st.title("🌍 Itinerario Final: Italia 2025")
+    st.subheader("13 Abril - 2 Mayo 2025")
 
     # Introducción
     st.write("""
-    4 diferentes planes para nuestro viaje de 18 días. 
+    Itinerario definitivo para el viaje de 20 días por Italia, con bases principales en Trento y Roma.
     """)
-
-    # Selector de planes
-    plan = st.selectbox(
-        "Selecciona un plan para ver detalles:",
-        ["Plan A: Italia + Croacia Completo", 
-         "Plan B: Solo Italia", 
-         "Plan C: Norte de Italia + Toscana",
-         "Plan D: Norte de Italia + Croacia con regreso por Zagreb",
-         "Plan E: Norte de Italia + Lagos + Roma",
-
-         ]
-    )
 
     def mostrar_tabla_alojamiento(itinerario: List[Dict]):
         """Muestra una tabla con los enlaces de alojamiento para 1 y 3 personas"""
         # Crear DataFrame con los datos de alojamiento
         data = []
         for item in itinerario:
-            if item["categoria"] not in ["Regreso"]:
+            # Excluir excursiones de un día, Trento, Provesano y opciones por definir
+            if (item["categoria"] not in ["Excursión", "Base Trento", "Por definir", "Provesano"]):
                 url_1p = get_booking_links(item["lugar"], item["fecha"], 1)
                 url_3p = get_booking_links(item["lugar"], item["fecha"], 3)
                 data.append({
                     "Ciudad": item["lugar"],
                     "Fechas": item["fecha"],
                     "Booking (1 persona)": f"[Reservar]({url_1p})",
-                    "Booking (3 personas)": f"[Reservar]({url_3p})"
-                })
+                    "Booking (3 personas)": f"[Reservar]({url_3p})",
+                    "Notas": item.get("nota", "")})
         
         df = pd.DataFrame(data)
         st.markdown("**🏨 Enlaces de Reserva por Ciudad:**")
@@ -141,10 +177,8 @@ def crear_presentacion():
     def get_booking_links(ciudad: str, fecha: str, personas: int) -> str:
         # Diccionario para convertir meses de español a inglés
         meses_es_en = {
-            'Enero': 'January', 'Febrero': 'February', 'Marzo': 'March',
-            'Abril': 'April', 'Mayo': 'May', 'Junio': 'June',
-            'Julio': 'July', 'Agosto': 'August', 'Septiembre': 'September',
-            'Octubre': 'October', 'Noviembre': 'November', 'Diciembre': 'December'
+            'Abril': 'April',
+            'Mayo': 'May'
         }
         
         # Convertir la fecha a formato inglés
@@ -164,19 +198,15 @@ def crear_presentacion():
         
         # Diccionario de áreas recomendadas por ciudad
         areas_recomendadas = {
-            "Milán": "Porta Nuova;-121726", # Área moderna y bien conectada
+            "Milán": "Porta Nuova;-121726",
             "Trento": "Centro histórico;-130793",
-            "Venecia": "San Marco;-129524", # Centro histórico
-            "Roma": "Centro Storico;-126693", # Centro histórico
-            "Florencia": "Duomo;-125977", # Centro histórico
-            "Split": "Centro histórico;-127514",
-            "Dubrovnik": "Old Town;-127241", # Ciudad amurallada
-            "Zagreb": "Lower Town;-128739", # Centro
-            "Rovinj": "Centro;-127466",
-            "Siena": "Terzo di Camollia;-130368",
+            "Venecia": "San Marco;-129524",
+            "Roma": "Centro Storico;-126693",
+            "Florencia": "Duomo;-125977",
+            "Bologna": "Centro;-126699",
             "Verona": "Città Antica;-130437",
-            "Como": "Como City Centre;-125932",
-            "Nápoles": "Historical Center;-127198"
+            "Siena": "Terzo di Camollia;-130368",
+            "Orvieto": "Centro Storico;-130129"
         }
         
         area_param = f"&ss={areas_recomendadas.get(ciudad, '')}" if ciudad in areas_recomendadas else f"&ss={ciudad}"
@@ -186,218 +216,53 @@ def crear_presentacion():
         
         return url
 
-    # Mostrar detalles según el plan seleccionado
-    if plan == "Plan A: Italia + Croacia Completo":
-        st.markdown("""
-        ### 🎯 Plan A: La ruta completa
-        **Características principales:**
-        - Norte de Italia (6 días)
-        - Croacia (6 días)
-        - Sur de Italia (6 días)
-        
-        **Ventajas:**
-        - ✅ Cubre todos los destinos principales
-        - ✅ Balance entre Italia y Croacia
-        - ✅ Incluye Roma y la Costa Amalfitana
-        
-        **Desventajas:**
-        - ⚠️ Ritmo más intenso
-        - ⚠️ Más tiempo en traslados
-        - ⚠️ Mayor costo en transportes
-        """)
-        
-        # Crear y mostrar mapa del Plan A
-        itinerario = crear_itinerario_plan_a()
-        colores = get_colores_plan_a()
-        conexiones = get_conexiones_plan_a()
-        mapa = crear_mapa(itinerario, colores, conexiones)
-        folium_static(mapa)
-        
-        # Sección de alojamiento recomendado
-        st.subheader("🏨 Alojamiento Recomendado")
-        mostrar_tabla_alojamiento(itinerario)  
-      
-        st.info("""
-        💡 **Tips de alojamiento:**
-        - En Venecia, el área de San Marco es más cara pero vale la pena por la experiencia
-        - En Roma, el Centro Storico te permite caminar a todos los sitios principales
-        - En Split y Dubrovnik, quedarse dentro del casco histórico mejora mucho la experiencia
-        - En Milán, el área de Porta Nuova ofrece buena conexión y precios más moderados
-        """)
-        
-        
-    elif plan == "Plan B: Solo Italia":
-        st.markdown("""
-        ### 🎯 Plan B: Italia en profundidad
-        **Características principales:**
-        - Norte de Italia (6 días)
-        - Roma (4 días)
-        - Florencia y Toscana (4 días)
-        - Costa Amalfitana (4 días)
-        
-        **Ventajas:**
-        - ✅ Experiencia más profunda de Italia
-        - ✅ Menos traslados largos
-        - ✅ Más tiempo en cada ciudad
-        
-        **Desventajas:**
-        - ⚠️ No conocer Croacia
-        - ⚠️ Mayor costo en alojamiento
-        """)
-        
-        # Crear y mostrar mapa del Plan B
-        itinerario = crear_itinerario_plan_b()
-        colores = get_colores_plan_b()
-        conexiones = get_conexiones_plan_b()
-        mapa = crear_mapa(itinerario, colores, conexiones)
-        folium_static(mapa)
+    # Crear y mostrar mapa
+    itinerario = crear_itinerario()
+    colores = get_colores()
+    conexiones = get_conexiones()
+    mapa = crear_mapa(itinerario, colores, conexiones)
+    folium_static(mapa)
+    
+    # Notas y consideraciones
+    st.subheader("📝 Notas Importantes")
+    st.markdown("""
+    **Sobre el alojamiento:**
+    * En Trento nos quedamos con Lozana
+    * Solo necesitamos reservar:
+        - Roma (22-25 Abril)
+        - Ciudades del recorrido de regreso (por definir)
+        - Milán (última noche)
 
-        # Sección de alojamiento recomendado
-        st.subheader("🏨 Alojamiento Recomendado")
-        mostrar_tabla_alojamiento(itinerario)
-        
-        st.info("""
-        💡 **Tips de alojamiento Plan B:**
-        - En Roma, elige el Centro Storico para estar cerca de todo
-        - En Florencia, el área del Duomo es perfecta para turismo
-        - En Nápoles, el Centro Histórico tiene el mejor ambiente
-        - Para la Costa Amalfitana, Positano o Sorrento son excelentes bases
-        """)
+    **Sobre los traslados:**
+    * Milán -> Trento: Auto con Nicola y Lozana
+    * Trento es base de operaciones para la primera parte
+    * Casa padres de Nicola -> Venecia: Se puede hacer en el día
+    * Roma -> Norte: Ruta por definir, pero el 30 debemos estar en Trento
 
-    elif plan == "Plan C: Norte de Italia + Toscana":
-        st.markdown("""
-        ### 🎯 Plan C: La Toscana y los Lagos
-        **Características principales:**
-        - Norte de Italia (7 días)
-        - Región de Lagos (3 días)
-        - Toscana (8 días)
-        
-        **Ventajas:**
-        - ✅ Ritmo más relajado
-        - ✅ Italia más auténtica
-        - ✅ Pueblos pequeños
-        - ✅ Mejor gastronomía local
-        
-        **Desventajas:**
-        - ⚠️ No visitar Roma
-        - ⚠️ No conocer Croacia
-        """)
-        
-        # Crear y mostrar mapa del Plan C
-        itinerario = crear_itinerario_plan_c()
-        colores = get_colores_plan_c()
-        conexiones = get_conexiones_plan_c()
-        mapa = crear_mapa(itinerario, colores, conexiones)
-        folium_static(mapa)
+    **Puntos a definir:**
+    * Excursiones desde Trento (13-18 Abril)
+    * Ruta de regreso Roma -> Trento (26-29 Abril)
+        - Opción Arte: más ciudad y cultura
+        - Opción Costa: más naturaleza y mar
+    * Tiempo en Milán al final (1-2 Mayo)
 
-        # Sección de alojamiento recomendado
-        st.subheader("🏨 Alojamiento Recomendado")
-        mostrar_tabla_alojamiento(itinerario)
-        
-        st.info("""
-        💡 **Tips de alojamiento Plan C:**
-        - En Como, el centro histórico ofrece las mejores vistas al lago
-        - En Siena, el Terzo di Camollia es tranquilo y auténtico
-        - En San Gimignano, intenta alojarte dentro de las murallas
-        - En Bellagio, busca hoteles con vista al lago
-        """)
-
-    elif plan == "Plan E: Norte de Italia + Lagos + Roma":
-        st.markdown("""
-        ### 🎯 Plan E: Norte de Italia + Lagos + Roma
-        **Características principales:**
-        - Norte de Italia (7 días)
-        - Región de Lagos (3 días)
-        - Roma y alrededores (8 días)
-        
-        **Ventajas:**
-        - ✅ Ritmo balanceado
-        - ✅ Combina naturaleza y cultura
-        - ✅ Más tiempo en Roma
-        - ✅ Menor costo en transportes
-        
-        **Desventajas:**
-        - ⚠️ No conocer Croacia
-        - ⚠️ No ver la Toscana
-        """)
-        
-        # Crear y mostrar mapa del Plan E
-        itinerario = crear_itinerario_plan_e()
-        colores = get_colores_plan_e()
-        conexiones = get_conexiones_plan_e()
-        mapa = crear_mapa(itinerario, colores, conexiones)
-        folium_static(mapa)
-
-        # Sección de alojamiento recomendado
-        st.subheader("🏨 Alojamiento Recomendado")
-        mostrar_tabla_alojamiento(itinerario)
-        
-        st.info("""
-        💡 **Tips de alojamiento Plan E:**
-        - En Como, busca alojamiento cerca del lago para mejores vistas
-        - En Bellagio, los hoteles con terraza ofrecen vistas espectaculares
-        - En Roma, el Centro Storico permite caminar a todas las atracciones
-        - Para excursiones desde Roma, el área de Termini ofrece buena conexión
-        """)
-
-    elif plan == "Plan D: Norte de Italia + Croacia con regreso por Zagreb":
-        st.markdown("""
-        ### 🎯 Plan D: Norte de Italia + Croacia con regreso gradual
-        **Características principales:**
-        - Norte de Italia (7 días)
-        - Croacia (8 días)
-        - Regreso vía Zagreb (3 días)
-        
-        **Ventajas:**
-        - ✅ Viaje en auto con amigos
-        - ✅ Conocer Zagreb
-        - ✅ Más tiempo en cada lugar
-        - ✅ Ritmo más relajado en Croacia
-        
-        **Desventajas:**
-        - ⚠️ No visitar Roma
-        - ⚠️ No ver Costa Amalfitana
-        """)
-        
-        # Crear y mostrar mapa del Plan D
-        itinerario = crear_itinerario_plan_d()
-        colores = get_colores_plan_d()
-        conexiones = get_conexiones_plan_d()
-        mapa = crear_mapa(itinerario, colores, conexiones)
-        folium_static(mapa)
-
-        # Sección de alojamiento recomendado
-        st.subheader("🏨 Alojamiento Recomendado")
-        mostrar_tabla_alojamiento(itinerario)
-        
-        st.info("""
-        💡 **Tips de alojamiento Plan D:**
-        - En Rovinj, busca alojamiento en el casco antiguo con vista al mar
-        - En Split, el Palacio de Diocleciano es la mejor zona
-        - En Zagreb, Lower Town ofrece mejor relación calidad-precio
-        - En Plitvice, alójate cerca del Parque Nacional para entrar temprano
-        """)
-
-
-    # Recomendación final
-    st.subheader("🌟 Recomendación Personal")
-    st.write("""
-    Basado en nuestras conversaciones, el Plan C o D o E serían los más recomendados porque:
-    - Permiten un ritmo más relajado
-    - Se ajustan mejor al presupuesto
-    - Ofrecen una experiencia más auténtica
-    - Tienen mejor logística de transporte
+    **Recordatorios:**
+    * El 30 de Abril hay que estar en Trento
+    * Las fechas 26-29 son flexibles según la ruta que elijamos
+    * Es importante reservar Roma con tiempo
     """)
 
-# Importar todas las funciones auxiliares del archivo original
-from planes import (
-    crear_itinerario_plan_a, get_colores_plan_a, get_conexiones_plan_a,
-    crear_itinerario_plan_b, get_colores_plan_b, get_conexiones_plan_b,
-    crear_itinerario_plan_c, get_colores_plan_c, get_conexiones_plan_c,
-    crear_itinerario_plan_d, get_colores_plan_d, get_conexiones_plan_d,
-    crear_itinerario_plan_e, get_colores_plan_e, get_conexiones_plan_e,
-
-)
+    # Sección de alojamiento recomendado
+    st.subheader("🏨 Alojamiento Recomendado")
+    mostrar_tabla_alojamiento(itinerario)
+    
+    st.info("""
+    💡 **Tips de alojamiento:**
+    - En Trento, el centro histórico es la mejor opción para la base principal
+    - En Provesano, buscar opciones de agroturismo o B&B locales
+    - En Roma, el Centro Storico te permite caminar a todos los sitios principales
+    - Para las ciudades de la ruta de retorno, priorizar ubicaciones céntricas
+    """)
 
 if __name__ == "__main__":
     crear_presentacion()
